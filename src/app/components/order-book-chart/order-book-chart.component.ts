@@ -1,6 +1,7 @@
 import { Component, Input, OnChanges, SimpleChanges, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { Chart, ChartConfiguration, ChartType, registerables } from 'chart.js';
 import { OrderBookSnapshot } from '../../models/order-book.model';
+Chart.register(...registerables);
 
 @Component({
   selector: 'app-order-book-chart',

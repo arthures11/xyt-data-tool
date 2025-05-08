@@ -1,3 +1,14 @@
-<h1 class="text-3xl font-bold underline">
-    Hello world!
-</h1>
+<div class="min-h-screen bg-gray-200 p-4 md:p-8">
+    <header class="mb-6 text-center">
+        <h1 class="text-3xl font-bold text-gray-800">{{ title }}</h1>
+    </header>
+
+    <main>
+        <app-time-navigation></app-time-navigation>
+        <app-order-book-chart [snapshot]="currentSnapshot$ | async"></app-order-book-chart>
+    </main>
+
+    <footer class="mt-8 text-center text-sm text-gray-500">
+        <p>©2025 Artur Bryja xyt-data-tool assessment</p>
+    </footer>
+</div>
