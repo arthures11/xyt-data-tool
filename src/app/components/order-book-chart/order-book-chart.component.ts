@@ -16,10 +16,12 @@ export class OrderBookChartComponent implements OnChanges, AfterViewInit, OnDest
   @ViewChild('orderBookCanvas') canvas: any;
   public chart: Chart | undefined;
 
-  private readonly bidColor = 'rgba(0, 123, 255, 0.7)'; // Blue
-  private readonly askColor = 'rgba(255, 159, 64, 0.7)'; // Orange
+  private readonly bidColor = 'rgba(0, 123, 255, 0.7)';
+  private readonly askColor = 'rgba(255, 159, 64, 0.7)';
   private readonly gridColor = 'rgba(200, 200, 200, 0.2)';
   private readonly tickColor = 'rgba(100, 100, 100, 1)';
+
+  private readonly FIXED_MAX_SIZE = 400000;
 
 
   constructor() { }
@@ -114,6 +116,8 @@ export class OrderBookChartComponent implements OnChanges, AfterViewInit, OnDest
           },
           x: {
             stacked: false,
+            min: -this.FIXED_MAX_SIZE,
+            max: this.FIXED_MAX_SIZE,
             grid: {
               color: this.gridColor,
               //borderColor: this.tickColor,
@@ -183,29 +187,29 @@ export class OrderBookChartComponent implements OnChanges, AfterViewInit, OnDest
 
     const bidData = sortedPriceLabelsNum.map(price => {
       const bid = snapshot.Bids.find(b => b.price === price);
-      return bid ? -bid.size : null;
+      return bid ? -Math.min(bid.size, this.FIXED_MAX_SIZE) : null;
     });
 
     const askData = sortedPriceLabelsNum.map(price => {
       const ask = snapshot.Asks.find(a => a.price === price);
-      return ask ? ask.size : null;
+      return ask ? Math.min(ask.size, this.FIXED_MAX_SIZE) : null;
     });
 
     this.chart.data.labels = yLabels;
     this.chart.data.datasets[0].data = bidData;
     this.chart.data.datasets[1].data = askData;
 
-    const maxAbsSize = Math.max(
-        ...snapshot.Bids.map(b => b.size),
-        ...snapshot.Asks.map(a => a.size),
-        1 // non zero value for empty data must be handled
-    );
-    const xRange = maxAbsSize * 1.1;
+    // const maxAbsSize = Math.max(
+    //     ...snapshot.Bids.map(b => b.size),
+    //     ...snapshot.Asks.map(a => a.size),
+    //     1 // non zero value for empty data must be handled
+    // );
+    // const xRange = maxAbsSize * 1.1;
 
-    if (this.chart.options?.scales?.['x']) {
-      this.chart.options.scales['x'].min = -xRange;
-      this.chart.options.scales['x'].max = xRange;
-    }
+    // if (this.chart.options?.scales?.['x']) {
+    //   this.chart.options.scales['x'].min = -xRange;
+    //   this.chart.options.scales['x'].max = xRange;
+    // }
     if(this.chart.options?.plugins?.title) {
       this.chart.options.plugins.title.text = `${this.title} - ${snapshot.Time}`;
     }
