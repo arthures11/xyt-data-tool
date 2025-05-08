@@ -1,1 +1,57 @@
-<p>time-navigation works!</p>
+<div class="p-4 bg-gray-100 shadow-md rounded-md my-4">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <div class="text-sm font-semibold">
+      <span *ngIf="currentSnapshot$ | async as snapshot; else loadingTime">
+        Timestamp: {{ snapshot.Time }}
+      </span>
+            <ng-template #loadingTime>Timestamp: Loading...</ng-template>
+            <span *ngIf="(currentIndex$ | async) !== null && (totalSnapshots$ | async)" class="ml-2 text-gray-600">
+        ({{ (currentIndex$ | async)! + 1 }} / {{ totalSnapshots$ | async }})
+      </span>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <button
+                    (click)="previous()"
+                    [disabled]="(isAtStart$ | async) || (isReplaying$ | async)"
+                    class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                Previous
+            </button>
+            <button
+                    (click)="next()"
+                    [disabled]="(isAtEnd$ | async) || (isReplaying$ | async)"
+                    class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                Next
+            </button>
+        </div>
+
+        <div class="flex-grow md:flex-grow-0">
+            <select
+                    *ngIf="availableTimestamps$ | async as timestamps"
+                    (change)="selectTime($event)"
+                    [value]="(currentSnapshot$ | async)?.Time"
+                    [disabled]="isReplaying$ | async"
+                    class="block w-full md:w-auto px-3 py-2 text-sm bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-200">
+                <option *ngFor="let time of timestamps" [value]="time">{{ time }}</option>
+            </select>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <label for="replayDuration" class="text-sm font-medium text-gray-700">Replay (s):</label>
+            <input
+                    type="number"
+                    id="replayDuration"
+                    [(ngModel)]="replayDurationSeconds"
+                    min="5"
+                    max="120"
+                    [disabled]="(isReplaying$ | async)  ?? false"
+                    class="w-20 px-2 py-1 text-sm border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-200" />
+            <button
+                    (click)="toggleReplay()"
+                    class="px-4 py-2 text-sm font-medium text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors"
+                    [ngClass]="(isReplaying$ | async) ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500' : 'bg-green-600 hover:bg-green-700 focus:ring-green-500'">
+                {{ (isReplaying$ | async) ? 'Stop Replay' : 'Start Replay' }}
+            </button>
+        </div>
+    </div>
+</div>

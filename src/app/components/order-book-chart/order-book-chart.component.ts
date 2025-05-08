@@ -4,7 +4,7 @@ import { OrderBookSnapshot } from '../../models/order-book.model';
 
 @Component({
   selector: 'app-order-book-chart',
-  imports: [],
+  standalone:false,
   templateUrl: './order-book-chart.component.html',
   styleUrl: './order-book-chart.component.css'
 })
